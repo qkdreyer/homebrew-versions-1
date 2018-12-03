@@ -46,6 +46,9 @@ class Elasticsearch17 < Formula
       s.sub!(%r{#\!/bin/sh\n}, "#!/bin/sh\n\nES_HOME=#{prefix}")
       # Configure ES_CLASSPATH paths to use libexec instead of lib
       s.gsub!(%r{ES_HOME/lib/}, "ES_HOME/libexec/")
+      # Fix JDK9+
+      # s.sub!("JAVA_OPTS=\"$JAVA_OPTS -XX:+UseParNewGC\"", "#JAVA_OPTS=\"$JAVA_OPTS -XX:+UseParNewGC\"")
+      # s.sub!("JAVA_OPTS=\"$JAVA_OPTS -XX:+UseConcMarkSweepGC\"", "#JAVA_OPTS=\"$JAVA_OPTS -XX:+UseConcMarkSweepGC\"")
     end
 
     inreplace "#{bin}/plugin" do |s|
@@ -53,6 +56,8 @@ class Elasticsearch17 < Formula
       s.sub!(/SCRIPT="\$0"/, %(SCRIPT="$0"\nES_CLASSPATH=#{libexec}))
       # Replace paths to use libexec instead of lib
       s.gsub!(%r{\$ES_HOME/lib/}, "$ES_CLASSPATH/")
+      # Fix JAVA path unescaped spaces
+      # s.sub!("\"$JAVA\"", "`sed 's/ /\\\\\\\\\\\\\\\\ /g' <<< \"$JAVA\"`")
     end
   end
 
@@ -92,6 +97,8 @@ class Elasticsearch17 < Formula
           <dict>
             <key>ES_JAVA_OPTS</key>
             <string>-Xss200000</string>
+            <key>JAVA_HOME</key>
+            <string>/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home</string>
           </dict>
           <key>RunAtLoad</key>
           <true/>
